@@ -1,0 +1,180 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#f7f8fa">
+<link rel="icon" href="data:,">
+<title>Quartalsnoten · Klassenübersicht</title>
+<style>
+:root{
+  --blue:oklch(0.55 0.20 255);--ink:oklch(0.25 0.025 255);--muted:oklch(0.48 0.025 255);
+  --line:oklch(0.88 0.012 255);--surface:oklch(0.985 0.004 255);--paper:oklch(1 0 0);
+  --green:oklch(0.48 0.11 155);--green-light:oklch(0.50 0.10 155);--gold:oklch(0.70 0.15 82);
+  --orange:oklch(0.56 0.16 45);--red:oklch(0.48 0.19 20);--brown:oklch(0.32 0.055 55);--neutral:oklch(0.48 0.025 255);
+}
+*{box-sizing:border-box}
+html{min-height:100%;background:var(--surface)}
+body{margin:0;min-height:100dvh;color:var(--ink);background:var(--surface);font:16px/1.6 "Aptos","Segoe UI",Helvetica,Arial,sans-serif;-webkit-font-smoothing:antialiased}
+select,button{font:inherit}
+button{cursor:pointer}
+button:disabled{cursor:default;opacity:.4}
+:focus-visible{outline:3px solid var(--blue);outline-offset:3px}
+.topbar{border-bottom:1px solid var(--line);background:var(--paper)}
+.topbar-inner{max-width:1280px;margin:0 auto;padding:20px 24px}
+.brand-title{margin:0;font-size:22px;line-height:1.2;letter-spacing:-.02em}
+.brand-subtitle{margin:4px 0 0;color:var(--muted);font-size:14px;line-height:1.4}
+main{max-width:1280px;margin:0 auto;padding:40px 24px}
+.controls{display:flex;align-items:flex-end;justify-content:center;flex-wrap:wrap;gap:16px;text-align:left}
+.control label,.control-label{display:block;margin-bottom:8px;font-size:16px;font-weight:650}
+select{display:block;width:190px;min-height:52px;padding:10px 40px 10px 14px;border:1px solid oklch(0.72 0.03 255);border-radius:8px;background:var(--paper);color:var(--ink);font-size:17px;font-weight:600;cursor:pointer;transition:border-color .18s ease}
+select:hover{border-color:var(--blue)}
+.student-control select{width:min(420px,calc(100vw - 48px))}
+.quarter-switch{display:flex;gap:4px}
+.quarter-button{min-width:52px;min-height:52px;padding:8px 12px;border:1px solid oklch(0.72 0.03 255);background:var(--paper);color:var(--ink);font-weight:700;transition:background-color .18s ease,color .18s ease,border-color .18s ease}
+.quarter-button:first-child{border-radius:8px 0 0 8px}
+.quarter-button:last-child{border-radius:0 8px 8px 0}
+.quarter-button:not(:first-child){margin-left:-1px}
+.quarter-button:hover:not(:disabled){border-color:var(--blue);color:var(--blue);position:relative}
+.quarter-button.active,.quarter-button.active:hover:not(:disabled){background:var(--blue);border-color:var(--blue);color:var(--paper);position:relative}
+.overview{margin-top:48px;text-align:center}
+.student-name{margin:0;font-size:clamp(25px,3vw,36px);line-height:1.2;letter-spacing:-.025em;text-wrap:balance}
+.summary{min-height:48px;margin:12px 0 0;color:var(--muted);font-size:40px;line-height:1.2}
+.summary.has-deficit{color:var(--red);font-weight:650}
+.grades{margin-top:28px;display:grid;grid-template-columns:repeat(auto-fit,193px);grid-auto-rows:auto;justify-content:center;border-top:1px solid var(--line);border-left:1px solid var(--line);background:var(--paper);text-align:left}
+.grade-cell{display:flex;flex-direction:column;width:193px;min-height:119px;padding:3px 5px 4px;border-right:1px solid var(--line);border-bottom:1px solid var(--line)}
+.grade-cell.has-history{min-height:119px}
+.subject{flex:none;max-width:100%;font-size:39.375px;font-weight:750;line-height:.9;letter-spacing:-.035em;overflow-wrap:normal;word-break:normal}
+.very-long-subject .subject{letter-spacing:-.08em;overflow-wrap:anywhere}
+.grade{flex:1 0 auto;display:flex;align-items:center;justify-content:center;min-height:52px;padding:0 2px;font-family:"Cascadia Mono","SFMono-Regular",Consolas,monospace;font-size:64px;font-weight:800;line-height:.8;font-variant-numeric:tabular-nums;white-space:nowrap;background:transparent}
+.deficit-history{flex:none;align-self:flex-end;max-width:100%;color:var(--red);font-size:16px;font-weight:650;line-height:1.2;text-align:right;animation:history-blink 2.6s ease-in-out infinite}
+.g1{color:var(--green)}.g2{color:var(--green-light)}.g3{color:var(--gold)}.g4{color:var(--orange)}
+.deficit{color:var(--red);animation:deficit-blink 1.5s ease-in-out infinite}
+.nb{color:var(--brown)}.nt{color:var(--neutral)}.e3{color:var(--blue)}.empty{color:var(--muted)}
+@keyframes deficit-blink{0%,42%,100%{opacity:1}58%,78%{opacity:.25}}
+@keyframes history-blink{0%,100%{color:var(--red);opacity:.9}50%{color:var(--blue);opacity:.65}}
+@media (max-width:700px){main{padding-top:32px}}
+@media (max-width:560px){
+  .topbar-inner{padding:16px}.brand-title{font-size:20px}main{padding:28px 16px}
+  .controls{gap:12px}.control label,.control-label{font-size:15px}
+  .student-control{width:100%}.student-control select{width:100%;font-size:16px}
+  .quarter-button{min-width:48px;padding:8px 10px}
+}
+@media (prefers-reduced-motion:reduce){*,*::before,*::after{scroll-behavior:auto!important;transition:none!important}.deficit,.deficit-history{animation:none}}
+@media print{.topbar{border:0}main{padding-top:24px}.grades{grid-template-columns:repeat(auto-fit,193px)}.deficit,.deficit-history{animation:none}body{background:var(--paper)}}
+</style>
+</head>
+<body>
+<header class="topbar"><div class="topbar-inner"><h1 class="brand-title">Quartalsnoten</h1><p class="brand-subtitle" id="classSubtitle"></p></div></header>
+<main>
+  <div class="controls">
+    <div class="control"><label for="classSelect">Klasse</label><select id="classSelect"><option value="class5">05/C</option><option value="class6">06/C</option></select></div>
+    <div class="control"><span class="control-label" id="quarterLabel">Quartal</span><div class="quarter-switch" id="quarterSwitch" role="group" aria-labelledby="quarterLabel"><button class="quarter-button active" type="button" data-quarter="Q1" aria-pressed="true">Q1</button><button class="quarter-button" type="button" data-quarter="Q2" aria-pressed="false">Q2</button><button class="quarter-button" type="button" data-quarter="Q3" aria-pressed="false">Q3</button><button class="quarter-button" type="button" data-quarter="Q4" aria-pressed="false">Q4</button></div></div>
+    <div class="control student-control"><label for="studentSelect">Schülernamen auswählen</label><select id="studentSelect" autocomplete="off"></select></div>
+  </div>
+  <section class="overview" aria-labelledby="studentName"><h2 class="student-name" id="studentName"></h2><p class="summary" id="summary" aria-live="polite"></p><div class="grades" id="grades" aria-label="Quartalsnoten nach Fach"></div></section>
+</main>
+<script>
+const CLASSES={"class5":{"label":"05/C","quarters":{"Q1":{"subjects":["BI","D","E5","GL","KU","M","RI","MU","RPP","SP","TCHW","METH","RER","RKR","FDS","M Sprache","AG TT 5","AG SK 5","AG Tanz 5","D FÖ","AG Abenteuer","AG Playground"],"students":[{"name":"Amuzu, Prince","grades":["2-","3","2+","2-","3-","3+","","1","","2","3+","E3","","2","","E2","","","","E3","","E3"]},{"name":"Arfe, Selya","grades":["2","3-","2+","1-","3-","2+","2","1","","2","2-","E3","","","","E1","E3","","","E3","",""]},{"name":"Bernsdorf, Emily","grades":["NB","NB","NB","NB","3","NB","","NB","NB","NB","3+","E3","","","","NB","","","","E3","E3",""]},{"name":"Beskardes (Beşkardeş), Efe","grades":["4+","3-","3","3-","4","3+","3+","2","","2","2-","E3","","","","E2","","","","E3","","E3"]},{"name":"Dagtekin (Dağtekin), Ahmet","grades":["3-","3-","3+","4+","4","3-","4","2","","3","2-","E3","","","","E3","","","","E3","","E3"]},{"name":"El Arrag, Hidaya","grades":["2","2+","2+","2+","2-","2+","2","1","","2","2","E3","","","","E1","","","","E3","","E3"]},{"name":"El Yachaoui, Moussa","grades":["3","4+","3-","3+","4","2-","NT","3","","2","2","E3","","","","E1","","","","E3","","E3"]},{"name":"Faizi, Fereshte","grades":["2","2-","2+","2+","3-","2+","3","1","","3","2","E3","","","","E1","","","","E3","","E3"]},{"name":"Galali, Bahoz","grades":["3","4+","3","2-","4","2-","4","2-","","2","2","E3","","","","E1","E3","","","E3","",""]},{"name":"Große, Jayden","grades":["3","4+","3+","3+","4+","3-","","3","","3","3","E3","3","","","E3","","","","E3","","E3"]},{"name":"Hafiane, Yassmine","grades":["2","3+","3","2+","4+","2+","","3","3+","2","2","E3","","","","E1","","","","E3","E3",""]},{"name":"Kremsier, Philipp","grades":["2-","2","2+","2-","3-","3+","","1","","2","2-","E3","","3+","","E2","","","","E3","","E3"]},{"name":"Kusi Oppong, Jayden","grades":["3+","2-","2-","2+","3","3+","","1-","","2","2-","E3","","3+","","E2","","","","E3","","E3"]},{"name":"Labahn, Fabienne","grades":["2","2+","2","2+","3-","2-","","2","","3","2","E3","","2-","","E1","","","E3","E3","",""]},{"name":"Mpanzu, Ambrósio","grades":["2","4+","3","2-","3+","2-","","2","","2","3+","E3","3-","","","E1","","","","E3","","E3"]},{"name":"Othman, Helin","grades":["2+","2+","2+","2+","1","2+","2","1","","2","2+","E3","","","","E1","","","","E3","","E3"]},{"name":"Pawlak, Alisha","grades":["NB","NB","NB","NB","NB","NB","","NB","NB","2","2-","E3","","","","NB","","E3","","E3","",""]},{"name":"Raulf, Celina","grades":["2","3","3","2-","3-","2-","","2","","2","3","E3","","3+","","E1","","","","E3","","E3"]},{"name":"Saighani, Sorosch","grades":["3","2+","2","3+","4","3+","2-","2","","2","2","E3","","","","E1","","","","E3","","E3"]},{"name":"Sarpong, Susana","grades":["3+","3+","2+","3+","3","3+","","2","","3","3","E3","","3","","E2","","","","E3","","E3"]},{"name":"Schwarzbrunn, Cheyenne","grades":["NB","NB","NB","NB","NB","NB","","NB","","2","3","E3","4","","","NB","","E3","","E3","",""]},{"name":"Shaker, Shaker","grades":["4+","4+","3+","2-","4","3+","4","3","","3","3-","E3","","","","E2","E3","","","E3","",""]},{"name":"Strek, Emilia Sophie","grades":["3+","3-","2","3+","2+","3+","","2","3+","2","2","E3","","","","E2","","","E3","E3","",""]},{"name":"Tserkovna, Alisa","grades":["3+","2","2","2+","1","1-","","1","2","2","2+","E3","","","3","E1","","E3","","E3","",""]},{"name":"Ural, Umut","grades":["3-","4+","3","3+","4+","3+","4-","2","","2","4","E3","","","","E2","","","","E3","E3",""]}]},"Q2":{"subjects":["BI","D","E5","GL","KU","M","RI","MU","RPP","SP","TCHW","METH","RER","RKR","FDS","M Sprache","AG TT 5","AG SK 5","AG Tanz 5","D FÖ","AG Abenteuer","AG Playground"],"students":[{"name":"Amuzu, Prince","grades":["2","3-","2","2-","4","2-","","2+","","2","3+","E1","","2-","","E1","","","","E2","","E3"]},{"name":"Arfe, Selya","grades":["2","3","2","1-","4+","2-","2","1","","2","2-","E1","","","","E1","E2","","","E2","",""]},{"name":"Bernsdorf, Emily","grades":["NB","NB","NB","NB","NB","NB","","NB","NB","NB","3+","E3","","","","E3","","","","E2","E1",""]},{"name":"Beskardes (Beşkardeş), Efe","grades":["3","4+","4","3-","4-","3-","3","2","","2","2-","E3","","","","E2","","","","E3","","E3"]},{"name":"Dagtekin (Dağtekin), Ahmet","grades":["2","3-","3","3-","4-","3-","3","2+","","2","2-","E3","","","","E2","","","","E2","","E3"]},{"name":"El Arrag, Hidaya","grades":["1","2-","2","2-","3+","3+","1","1","","2","2","E2","","","","E2","","","","E2","","E3"]},{"name":"El Yachaoui, Moussa","grades":["3","4","4","2-","3-","3+","3","3","","1","2","E2","","","","E2","","","","E3","","E3"]},{"name":"Faizi, Fereshte","grades":["2","3","2","2-","3-","2+","2","2+","","2","2","E1","","","","E1","","","","E2","","E3"]},{"name":"Galali, Bahoz","grades":["3","3-","2","2-","4","2-","3-","2","","2","2","E1","","","","E1","E2","","","E3","",""]},{"name":"Große, Jayden","grades":["2","3-","3-","2+","4","3-","","3+","","2","3","E1","3+","","","E1","","","","E2","","E3"]},{"name":"Hafiane, Yassmine","grades":["2","3","3","3+","2","3+","","2-","3","2","2","E1","","","","E1","","","","E2","E1",""]},{"name":"Kremsier, Philipp","grades":["1","2-","3+","2-","3+","2+","","1","","1","2","E1","","2-","","E1","","","","E2","","E3"]},{"name":"Kusi Oppong, Jayden","grades":["2","3+","2","2+","3-","3+","","2+","","2","2-","E1","","2-","","E1","","","","E2","","E3"]},{"name":"Labahn, Fabienne","grades":["2","2-","3","2+","3+","2-","","2+","","2","2","E2","","2-","","E2","","","E2","E2","",""]},{"name":"Mpanzu, Ambrósio","grades":["3","3-","4","2-","4+","3-","","2+","","2","3+","E1","3-","","","E1","","","","E2","","E3"]},{"name":"Othman, Helin","grades":["1","2+","1","2+","1","2+","2","1","","2","2+","E1","","","","E1","","","","E1","","E3"]},{"name":"Pawlak, Alisha","grades":["NB","NB","NB","NB","NB","NB","","NB","NB","NB","NB","E3","","","","E3","","E2","","E3","",""]},{"name":"Raulf, Celina","grades":["2","3-","3","2+","3+","3-","","3+","","2","3","E1","","2-","","E1","","","","E2","","E3"]},{"name":"Saighani, Sorosch","grades":["2","3+","2","3+","4","3-","3","2","","2","2","E2","","","","E2","","","","E2","","E3"]},{"name":"Sarpong, Susana","grades":["3","2-","2","3+","3+","2-","","3+","","2","2","E2","","2-","","E2","","","","E2","","E3"]},{"name":"Schwarzbrunn, Cheyenne","grades":["NB","NB","NB","NB","NB","NB","","NB","","NB","3","E3","NB","","","E3","","E2","","E3","",""]},{"name":"Shaker, Shaker","grades":["3","3-","3","3+","4","2-","3-","2-","","2","3","E2","","","","E2","","","","E2","","E3"]},{"name":"Strek, Emilia Sophie","grades":["3","3","2","2-","2+","2+","","2","3+","2","2","E1","","","","E1","","","E1","E2","",""]},{"name":"Tserkovna, Alisa","grades":["1","2","2","2+","1","1-","","1","2+","1","2","E1","","","2","E1","","E2","","E2","",""]},{"name":"Ural, Umut","grades":["3","4-","3","3-","4-","4+","3","3+","","2","4","E2","","","","E2","","","","E3","E2",""]}]},"Q3":{"subjects":["BI","D","E5","GL","KU","M","MU","RPP","SP","TCHW","METH","RER","RKR","FDS","M Sprache","AG TT 5","AG SK 5","AG Tanz 5","D FÖ","AG Abenteuer","AG Playground"],"students":[{"name":"Amuzu, Prince","grades":["1","3","2+","3+","4-","2-","2","","2","3","E1","","3","","E1","","","","E3","","E3"]},{"name":"Arfe, Selya","grades":["2","2-","2","3-","3+","4-","2","3+","2","2","E3","","","","E3","E2","","","E3","",""]},{"name":"Bernsdorf, Emily","grades":["NB","NB","NB","NB","NB","NB","NB","NB","NB","NB","E2","","","","E3","","","","E3","E1",""]},{"name":"Beskardes (Beşkardeş), Efe","grades":["3+","3-","4","4+","3","5+","3","3-","2","4","E3","","","","E3","","","","E3","","E3"]},{"name":"Dagtekin (Dağtekin), Ahmet","grades":["2+","3-","3","2-","3+","3+","2","3","2","4","E1","","","","E2","","","","E3","","E3"]},{"name":"El Arrag, Hidaya","grades":["1","2-","2","3+","1-","3+","1","2","2","2","E2","","","","E2","","","","E3","","E3"]},{"name":"El Yachaoui, Moussa","grades":["3","3-","4-","4+","3-","5+","3+","4+","1","3","E3","","","","E3","","","","E3","","E3"]},{"name":"Faizi, Fereshte","grades":["2-","3","3+","3+","2-","4+","2-","3+","2","2","E2","","","","E2","","","","E3","","E3"]},{"name":"Galali, Bahoz","grades":["2","3","2-","3-","5+","4+","2","3","3","2","E2","","","","E1","E2","","","E3","",""]},{"name":"Große, Jayden","grades":["2+","3+","3","3-","3-","3-","3+","","3","1","E2","3+","","","E2","","","","E3","","E3"]},{"name":"Hafiane, Yassmine","grades":["2","3","3","3+","1-","4+","1","3","3","2","E2","","","","E2","","","","E3","E1",""]},{"name":"Kremsier, Philipp","grades":["1","2-","3+","2-","2","2+","1","","1","2","E1","","3+","","E1","","","","E3","","E3"]},{"name":"Kusi Oppong, Jayden","grades":["2","3","2","3+","5+","4+","3","","2","4","E2","","3","","E2","","","","E3","","E3"]},{"name":"Labahn, Fabienne","grades":["2-","3+","3","3+","2+","4-","2","","2","2","E2","","4","","E2","","","E1","E3","",""]},{"name":"Mpanzu, Ambrósio","grades":["2","3","4","3-","5","4-","3","","2","4","E1","3","","","E1","","","","E3","","E3"]},{"name":"Othman, Helin","grades":["1","1-","1","2+","1","2+","1","2-","2","2","E2","","","","E2","","","","E3","","E3"]},{"name":"Pawlak, Alisha","grades":["NB","NB","NB","NB","NB","NB","NB","NT","NB","NB","E3","","","","E3","","E2","","E3","",""]},{"name":"Raulf, Celina","grades":["2","2-","3","2+","2+","3+","2","","2","2","E1","","2-","","E1","","","","E3","","E3"]},{"name":"Saighani, Sorosch","grades":["2","3","3+","3-","3","3+","3+","2-","2","3+","E1","","","","E1","","","","E3","","E3"]},{"name":"Sarpong, Susana","grades":["2+","2-","2","3+","3+","4+","2-","","3","3+","E2","","3+","","E2","","","","E3","","E3"]},{"name":"Schwarzbrunn, Cheyenne","grades":["NB","NB","NB","NB","NB","NB","NB","","NB","NB","E2","4-","","","E3","","E2","","E3","",""]},{"name":"Shaker, Shaker","grades":["2","3","3+","3+","4-","4-","3","3-","3","2-","E3","","","","E2","","","","E3","","E3"]},{"name":"Strek, Emilia Sophie","grades":["1","2+","2-","2-","2","2-","2","2-","2","2-","E1","","","","E1","","","E1","E3","",""]},{"name":"Tserkovna, Alisa","grades":["1","2","2","2+","1","1-","2+","2","1","2","E1","","","2","E1","","E2","","E3","",""]},{"name":"Ural, Umut","grades":["2-","3-","3","3-","3","5+","3","3-","3","2-","E3","","","","E3","","","","E3","E1",""]}]},"Q4":{"subjects":["BI","D","E5","GL","KU","M","MU","RPP","SP","TCHW","METH","RER","RKR","FDS","M Sprache","D FÖ","FSG"],"students":[{"name":"Amuzu, Prince","grades":["2","4+","","2+","4-","2-","3","","2","4","E1","","3","","E1","E1","E3"]},{"name":"Arfe, Selya","grades":["2","3+","","3+","3-","3-","2","3+","2","3","E2","","","","E3","E2","E3"]},{"name":"Bernsdorf, Emily","grades":["NB","NB","NB","NB","NB","NB","NB","NB","NB","NB","E2","","","","E3","E1","E1"]},{"name":"Beskardes (Beşkardeş), Efe","grades":["2","3-","3-","3+","3","4-","3","3+","2","3","E2","","","","E3","E3","E3"]},{"name":"Dagtekin (Dağtekin), Ahmet","grades":["2","4+","4+","2+","3-","2-","3","3","2","2","E1","","","","E1","E2","E3"]},{"name":"El Arrag, Hidaya","grades":["1","2-","2","2+","2","2-","1","2","2","3","E1","","","","E2","E1","E3"]},{"name":"El Yachaoui, Moussa","grades":["3","4","4-","3+","4","4-","3","4","1","4","E2","","","","E3","E3","E3"]},{"name":"Faizi, Fereshte","grades":["2","3-","2","2+","2","3-","3","3+","2","2","E2","","","","E2","E2","E3"]},{"name":"Galali, Bahoz","grades":["2","3-","2","2+","4+","2-","3","3","3","3","E2","","","","E1","E3","E2"]},{"name":"Große, Jayden","grades":["2","3","3-","2+","4+","3+","3","","3","3","E2","3","","","E2","E3","E3"]},{"name":"Hafiane, Yassmine","grades":["2","3-","3","2+","2+","3-","2","2+","2","2","E2","","","","E3","E2","E1"]},{"name":"Kremsier, Philipp","grades":["1","3+","3","2+","2","2+","1","","1","1","E1","2-","","","E2","E1","E3"]},{"name":"Kusi Oppong, Jayden","grades":["2","4+","2","3+","4-","3-","3","","2","2","E2","2-","","","E2","E1","E3"]},{"name":"Labahn, Fabienne","grades":["2","3","3-","3-","3","4+","3","","2","3","E2","4+","","","E2","E2","E2"]},{"name":"Mpanzu, Ambrósio","grades":["3","3","2-","2+","4-","3+","3","","2","3","E2","3-","","","E2","E3","E3"]},{"name":"Othman, Helin","grades":["1","1-","1","1+","1","1+","1","3+","2","3","E1","","","","E2","E1","E3"]},{"name":"Pawlak, Alisha","grades":["NB","NB","NB","NB","NB","NB","NB","NB","NB","NB","E3","","","","E3","E3","E2"]},{"name":"Raulf, Celina","grades":["1","3","3-","1+","2","2-","3","","2","2","E1","2-","","","E2","E2","E3"]},{"name":"Saighani, Sorosch","grades":["2","3","3","2+","5+","3-","3","2-","2","2","E3","","","","E3","E2","E3"]},{"name":"Sarpong, Susana","grades":["2","3+","2","2+","3-","3-","3","","2","2","E2","","3","","E2","E2","E3"]},{"name":"Schwarzbrunn, Cheyenne","grades":["NB","NB","NB","NB","NB","NB","NB","","NB","NB","E2","4+","","","E3","E2","E2"]},{"name":"Shaker, Shaker","grades":["1","3-","3","3+","5+","4-","3","4","3","3","E3","","","","E3","E2","E3"]},{"name":"Strek, Emilia Sophie","grades":["2","2","3","1+","2+","2-","2","2+","2","1","E1","","","","E2","E1","E3"]},{"name":"Tserkovna, Alisa","grades":["1","2","2","1-","1","1-","2","3","2","1","E1","","","2","E2","E2","E2"]},{"name":"Ural, Umut","grades":["3","4-","3-","3+","4","4-","3-","4","3","2","E3","","","","E3","E2","E1"]}]}}},"class6":{"label":"06/C","quarters":{"Q1":{"subjects":["BI","D","E5","GL","IF","KU","M","RI","MU","PH","RPP","SP","RER","RKR","AG GEW","D FÖ","AG GART"],"students":[{"name":"Amuzu, Prince","grades":["3","4+","2","4+","3+","3","2-","","2-","3","","2","","3","","E3",""]},{"name":"Arfe, Selya","grades":["3","2","2-","3+","4+","2","4-","2","2-","3","","2","","","","E3",""]},{"name":"Bernsdorf, Emily","grades":["NB","NB","NB","NB","NB","NB","NB","","NB","NB","NB","NB","","","","E3",""]},{"name":"Beskardes (Beşkardeş), Efe","grades":["3","3","4+","4","4+","2","4+","3","3","3","","2","","","","E3",""]},{"name":"Dagtekin (Dağtekin), Ahmet","grades":["2","4","4+","3-","3+","2-","3-","3","3","2","","2","","","","E3",""]},{"name":"El Arrag, Hidaya","grades":["3","3","2-","2-","3-","1","3+","3","2","3","","2","","","","E3",""]},{"name":"El Yachaoui, Moussa","grades":["3","5","5","4","5+","3+","4+","2","4+","3","","2","","","","E3",""]},{"name":"Faizi, Fereshte","grades":["3","3-","2-","3-","3-","2+","3+","2","2-","3","","1","","","","E3",""]},{"name":"Galali, Bahoz","grades":["3","3","2","4","2+","1-","2-","3","2+","3","","2","","","","E3",""]},{"name":"Große, Jayden","grades":["3","2-","4","3","4+","4+","4+","","4","3","","3","3-","","","E3",""]},{"name":"Hafiane, Yassmine","grades":["3","3+","4","2-","4+","1-","3+","","2-","3","2-","4","","","","E3",""]},{"name":"Kremsier, Philipp","grades":["2","2-","4+","NT","3+","2-","3+","","2-","2","","1","","2+","","E3",""]},{"name":"Kusi Oppong, Jayden","grades":["3","2-","3+","2+","2-","4+","2+","","3-","3","","2","","2-","","E3",""]},{"name":"Labahn, Fabienne","grades":["3","3-","4","3","2-","2+","5+","","2-","3","","2","","3","","E3",""]},{"name":"Mehmed, Neriman","grades":["NB","NB","NB","NB","NB","NB","NB","","NB","NB","","NB","NT","","","E3",""]},{"name":"Mpanzu, Ambrósio","grades":["3","2-","3","3","3+","3+","4+","","3-","2","","2","NT","","","E3",""]},{"name":"Othman, Helin","grades":["3","1-","2+","2","2+","1","2+","3","1-","3","","1","","","","E3",""]},{"name":"Pawlak, Alisha","grades":["NB","NB","NB","NB","NB","NB","NB","","NB","NB","NB","NB","","","","E3",""]},{"name":"Raulf, Celina","grades":["2","4","4+","1-","2+","1","3+","","2-","3","","NB","","3","","E3",""]},{"name":"Saighani, Sorosch","grades":["3","3-","4","3-","3-","3+","5+","3","3","3","","2","","","","E3",""]},{"name":"Sarpong, Susana","grades":["3","4+","2","4+","3-","1","4+","","2-","3","","3","","3-","","E3",""]},{"name":"Schwarzbrunn, Cheyenne","grades":["NB","NB","NB","NB","NB","NB","NB","","NB","NB","","NB","NB","","","E3",""]},{"name":"Shaker, Shaker","grades":["3","4","3-","4","4+","2-","3+","3","3-","3","","3","","","E3","E3","E3"]},{"name":"Shutcha, Amour Jo","grades":["","","","","","","","","","","","","","","E3","E3","E3"]},{"name":"Strek, Emilia Sophie","grades":["2","1-","4+","2","2+","1-","2-","","2+","3","2","2","","","","E3",""]},{"name":"Tserkovna, Alisa","grades":["3","2","3-","1-","2+","1","2+","","2","3","2-","2","","","","E3",""]},{"name":"Ural, Umut","grades":["3","5","3-","3-","4+","2","4+","3","3+","3","","3","","","","E3",""]}]}}}};
+const DEFICITS=new Set(["4-","5","5+","5-","6","6+","6-"]);
+const classSelect=document.getElementById("classSelect");
+const studentSelect=document.getElementById("studentSelect");
+const quarterButtons=[...document.querySelectorAll(".quarter-button")];
+let currentClass="class5",currentQuarter="Q1";
+function escapeHTML(value){return String(value).replace(/[&<>"']/g,char=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"}[char]))}
+function subjectHTML(subject){
+  return escapeHTML(subject)
+    .replace("AG Tanz 5","AG Tanz&nbsp;5")
+    .replace("AG Abenteuer","AG Aben&shy;teuer")
+    .replace("AG Playground","AG Play&shy;ground");
+}
+function gradeClass(grade){
+  if(!grade)return "empty";
+  if(DEFICITS.has(grade))return "deficit";
+  if(grade==="NB")return "nb";
+  if(grade==="NT"||grade==="X")return "nt";
+  if(/^E\d$/.test(grade))return "e3";
+  return ({1:"g1",2:"g2",3:"g3",4:"g4"})[grade.charAt(0)]||"nt";
+}
+function currentData(){return CLASSES[currentClass].quarters[currentQuarter]}
+function fillStudents(){
+  const previous=Number(studentSelect.value||0);
+  const students=currentData().students;
+  studentSelect.innerHTML="";
+  students.forEach((student,index)=>{const option=document.createElement("option");option.value=String(index);option.textContent=student.name;studentSelect.appendChild(option)});
+  studentSelect.value=String(Math.min(previous,students.length-1));
+}
+function updateHeader(){
+  const quarterNumber=currentQuarter.slice(1);
+  const classCode=CLASSES[currentClass].label.replace(/^0/,"").replace("/","");
+  document.getElementById("classSubtitle").textContent=`Klasse ${classCode} HAR/GRE\u00A0\u00A0\u00A0${quarterNumber}. Quartal`;
+  quarterButtons.forEach(button=>{
+    const available=Boolean(CLASSES[currentClass].quarters[button.dataset.quarter]);
+    button.disabled=!available;
+    const active=button.dataset.quarter===currentQuarter;
+    button.classList.toggle("active",active);
+    button.setAttribute("aria-pressed",String(active));
+  });
+}
+function deficitHistory(student,subject){
+  const currentGrade=student.grades[currentData().subjects.indexOf(subject)];
+  const classOrder=["class5","class6"],quarterOrder=["Q1","Q2","Q3","Q4"];
+  const currentClassIndex=classOrder.indexOf(currentClass);
+  const currentQuarterIndex=quarterOrder.indexOf(currentQuarter);
+  const entries=[];
+  for(let classIndex=0;classIndex<=currentClassIndex;classIndex++){
+    const classId=classOrder[classIndex];
+    const quarters=classIndex===currentClassIndex?quarterOrder.slice(0,currentQuarterIndex):quarterOrder;
+    for(const quarter of quarters){
+      const quarterData=CLASSES[classId].quarters[quarter];
+      if(!quarterData)continue;
+      const subjectIndex=quarterData.subjects.indexOf(subject);
+      if(subjectIndex<0)continue;
+      const quarterStudent=quarterData.students.find(item=>item.name===student.name);
+      if(!quarterStudent)continue;
+      const grade=quarterStudent.grades[subjectIndex];
+      if(DEFICITS.has(grade))entries.push({classId,quarter,grade});
+    }
+  }
+  if(entries.length===0||!DEFICITS.has(currentGrade))return "";
+  const groups=[];
+  for(const entry of entries){
+    let group=groups.find(item=>item.classId===entry.classId);
+    if(!group){group={classId:entry.classId,entries:[]};groups.push(group)}
+    group.entries.push(`${entry.quarter}:${entry.grade}`);
+  }
+  return groups.map(group=>{
+    const classCode=CLASSES[group.classId].label.replace(/^0/,"").replace("/","");
+    return `${classCode} (${group.entries.join(" / ")})`;
+  }).join(" / ");
+}
+function renderStudent(index){
+  const data=currentData(),student=data.students[index];
+  if(!student)return;
+  document.getElementById("studentName").textContent=student.name;
+  const deficitCount=student.grades.filter(grade=>DEFICITS.has(grade)).length;
+  const summary=document.getElementById("summary");
+  summary.textContent=deficitCount===0?"Keine Defizite":deficitCount===1?"1 Defizit":`${deficitCount} Defizite`;
+  summary.classList.toggle("has-deficit",deficitCount>0);
+  document.getElementById("grades").innerHTML=data.subjects.map((subject,subjectIndex)=>{
+    const grade=student.grades[subjectIndex],value=grade||"–",label=grade||"kein Eintrag";
+    const history=deficitHistory(student,subject);
+    const sizeClass=subject.includes(" ")||subject.length>6?" very-long-subject":subject.length>3||subject==="FSG"?" long-subject":"";
+    return `<div class="grade-cell${sizeClass}${history?" has-history":""}"><span class="subject" aria-label="${escapeHTML(subject)}">${subjectHTML(subject)}</span><span class="grade ${gradeClass(grade)}" aria-label="${escapeHTML(label)}">${escapeHTML(value)}</span>${history?`<span class="deficit-history">${escapeHTML(history)}</span>`:""}</div>`;
+  }).join("");
+}
+classSelect.addEventListener("change",()=>{
+  currentClass=classSelect.value;
+  if(!CLASSES[currentClass].quarters[currentQuarter])currentQuarter="Q1";
+  updateHeader();fillStudents();renderStudent(Number(studentSelect.value));
+});
+studentSelect.addEventListener("change",()=>renderStudent(Number(studentSelect.value)));
+quarterButtons.forEach(button=>button.addEventListener("click",()=>{
+  if(button.disabled)return;
+  currentQuarter=button.dataset.quarter;
+  updateHeader();fillStudents();renderStudent(Number(studentSelect.value));
+}));
+updateHeader();fillStudents();renderStudent(0);
+</script>
+</body>
+</html>
